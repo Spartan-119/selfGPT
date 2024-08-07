@@ -1,4 +1,4 @@
-FROM docker.io/postgres:15
+FROM docker.io/postgres:16
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
