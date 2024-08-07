@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Chat now | selfGPT
+{% endblock title %}
+
+{% block content %}
+  {% include "_running_tasks.html" %}
+
+  <div aria-label="breadcrumb p-1">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'indexes:list' %}" class="link-dark">All indexes</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'indexes:detail' index.uuid %}"
+                                     class="link-dark">Index {{ index.name }} </a></li>
+      <li class="breadcrumb-item active" aria-current="page">Chat</li>
+    </ol>
+  </div>
+
+
+  <section class="msger">
+    <main class="msger-chat" id="chatHistory"
+          style="background-image: url('{% static 'images/selfgpt-background.jpg' %}')">
+      <!-- Chat history will be dynamically added here -->
+    </main>
+    <form class="msger-inputarea" id="userInputForm">
+      <input type="text" class="msger-input" id="userInput" placeholder="Enter your message..." name="user_input"
+             required>
+      <input type="hidden" name="index_uuid" value="{{ index.uuid }}">
+      <input type="hidden" id="indexQueryUuid" name="index_query_uuid" value="">
+      <button type="button" class="msger-send-btn" id="submitButton"><i class="fas fa-paper-plane"></i></button>
+      <!-- Use Context Checkbox -->
+      <div class="control-panel">
+        <input class="form-check-input" type="checkbox" id="useContextCheckbox" name="use_context" checked>
+        <label class="form-check-label" for="useContextCheckbox">Use context</label>
+      </div>
+    </form>
+  </section>
+
+  <div class="callout">
+    <p>Here you can make queries to LLM and your data is taken into consideration, fetching relevant parts and sending
+      together with your prompt.</p>
+  </div>
+  <hr>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mt-3">
+        <div class="card-body">
+          <h3>Index Details</h3>
+          <p class="card-text"><strong>Name: </strong>{{ index.name }}</p>
+          <p class="card-text"><strong>Created at: </strong>{{ index.created|date:"Y-m-d H:i" }}</p>
+          <a href="{% url 'indexes:update' uuid=index.uuid %}" class="button confirm-button">Edit</a>
+          <a href="{% url 'indexes:delete' uuid=index.uuid %}" class="button delete-button">Delete</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card mt-3">
+        <div class="card-body">
+          <h3>Files</h3>
+          <p class="card-text"><strong>Total files: </strong>{{ index.files.count }}</p>
+          <a href="{% url 'indexes:file-upload' uuid=index.uuid %}" class="btn btn-outline-success mb-3"><i
+            class="fas fa-upload"></i> Upload new file</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const msgerInput = document.querySelector("#userInput");
+      const msgerChat = document.querySelector(".msger-chat");
+      const submitButton = document.querySelector("#submitButton");
+      const useContextCheckbox = document.querySelector("#useContextCheckbox");
+
+      const BOT_IMG = "{% static "images/icon-white-border.png" %}";
+      const PERSON_IMG = "{% static "images/profile.png" %}";
+      const BOT_NAME = "selfGPT";
+
+      document.querySelector("#submitButton").addEventListener("click", function (e) {
+        e.preventDefault();
+        const msgText = msgerInput.value;
+        if (!msgText.trim()) return;
+
+        appendMessage("{{ user_name }}", PERSON_IMG, "right", msgText);
+        msgerInput.value = "";
+
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: white;"></i>';
+        submitButton.disabled = true; // Disable the button to prevent multiple sends
+
+        const indexUuid = document.querySelector("input[name='index_uuid']").value;
+        const indexQueryUuid = document.querySelector("#indexQueryUuid").value;
+        const useContext = useContextCheckbox.checked;
+
+        fetch("{% url 'indexes:process_user_input' %}", {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_input: msgText,
+            index_uuid: indexUuid,
+            index_query_uuid: indexQueryUuid,
+            use_context: useContext,
+          }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Change the button back to the paper plane icon
+            submitButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            submitButton.disabled = false; // Re-enable the button
+
+            appendMessage(BOT_NAME, BOT_IMG, "left", data.response);
+            // Update the indexQueryUuid hidden field with the new UUID from the response
+            if (data.index_query) {
+              document.querySelector("#indexQueryUuid").value = data.index_query;
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      });
+
+      function appendMessage(name, img, side, text) {
+        const msgHTML = `
+      <div class="msg ${side}-msg">
+        <div class="msg-img" style="background-image: url(${img})"></div>
+        <div class="msg-bubble">
+          <div class="msg-info">
+            <div class="msg-info-name">${name}</div>
+            <div class="msg-info-time">${formatDate(new Date())}</div>
+          </div>
+          <div class="msg-text">${text}</div>
+        </div>
+      </div>
+    `;
+        msgerChat.insertAdjacentHTML("beforeend", msgHTML);
+        msgerChat.scrollTop += 500;
+      }
+
+      function formatDate(date) {
+        const h = "0" + date.getHours();
+        const m = "0" + date.getMinutes();
+        return `${h.slice(-2)}:${m.slice(-2)}`;
+      }
+
+      // Listen for Enter key presses on the input field
+      msgerInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.keyCode === 13) { // Check if Enter is pressed
+          e.preventDefault(); // Prevent the default action (form submission)
+          submitButton.click(); // Programmatically click the send button
+        }
+      });
+    });
+  </script>
+{% endblock content %}

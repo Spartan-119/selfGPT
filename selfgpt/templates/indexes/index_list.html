@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  All indexes | selfGPT
+{% endblock title %}
+
+{% block content %}
+  {% include "_running_tasks.html" %}
+
+  <div class="container mt-4">
+    <h2 class="mb-3">Your indexes</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <a href="{% url 'indexes:create' %}" class="button confirm-button">Create new index</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="thead-dark">
+        <tr>
+          <th scope="col" class="text-center">Name</th>
+          <th scope="col" class="text-center">Action</th>
+          <th scope="col" class="text-center">Uploaded files</th>
+          <th scope="col" class="text-center">Created at</th>
+          <th scope="col" class="text-center">Settings</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index in indexes %}
+          <tr>
+            <td class="text-center"><a href="{% url 'indexes:detail' index.uuid %}">{{ index.name }}</a></td>
+            <td class="text-center">
+              <a href="{% url 'indexes:chat' uuid=index.uuid %}" class="btn btn-outline-primary btn-sm" title="Chat"><i
+                class="fas fa-comments"></i> Start chat</a>
+            </td>
+            <td class="text-center">
+              {{ index.file_count }}
+              <a href="{% url 'indexes:file-upload' uuid=index.uuid %}" class="btn btn-outline-success btn-sm mr-1"
+                 title="Upload Files"><i class="fas fa-upload"></i> Add file</a>
+              <a href="{% url 'indexes:transcribe-video' uuid=index.uuid %}"
+                 class="btn btn-outline-primary btn-sm mr-1"><i
+                class="fas fa-microphone"></i> Add video</a>
+
+            </td>
+            <td class="text-center">{{ index.created|date:"Y-m-d H:i" }}</td>
+            <td class="text-center">
+              <a href="{% url 'indexes:detail' uuid=index.uuid %}" class="btn btn-outline-secondary btn-sm mr-1"
+                 title="Configurations"><i class="fas fa-cog"></i></a>
+              <a href="{% url 'indexes:delete' uuid=index.uuid %}" class="btn btn-outline-danger btn-sm mr-1"
+                 title="Delete"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center">No indexes found</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <p>Here, you can see and make new indexes for your documents. Click "Create new index" to start. You can add
+          your files, like reports or notes, so they're easy to query later. Keep everything organized and find what you
+          need fast.</p>
+      </div>
+
+    </div>
+  </div>
+{% endblock content %}

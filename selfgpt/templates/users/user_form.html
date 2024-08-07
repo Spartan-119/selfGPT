@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}{{ user.name }} | selfGPT{% endblock title %}
+{% block content %}
+<form class="form-horizontal w-50"
+      method="post"
+      action="{% url 'users:update' %}">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="button confirm-button">Update</button>
+      <a href="{% url 'users:detail' object.uuid %}" class="button delete-button">Cancel</a>
+    </div>
+  </div>
+</form>
+{% endblock content %}

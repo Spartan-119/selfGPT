@@ -1,0 +1,68 @@
+{% extends "account/base.html" %}
+
+{% load static i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block navbar %}
+{% endblock navbar %}
+
+{% block title %}
+  Log in | selfGPT
+{% endblock title %}
+
+{% block head_title %}
+  Log in
+{% endblock head_title %}
+{% block inner %}
+  <div class="account-container">
+    <!-- Logo at the top of the form -->
+    <div class="logo-container">
+      <img src="{% static 'images/logo-white.png' %}" alt="selfGPT Logo" class="logo-account">
+    </div>
+    <h1>Log in</h1>
+    {% get_providers as socialaccount_providers %}
+    {% if socialaccount_providers %}
+      <p>
+        {% translate "Please sign in with one of your existing third party accounts:" %}
+        {% if ACCOUNT_ALLOW_REGISTRATION %}
+          {% blocktranslate trimmed %}
+            Or, <a href="{{ signup_url }}" class="account-link">sign up</a>
+            for a {{ site_name }} account and sign in below:
+          {% endblocktranslate %}
+        {% endif %}
+      </p>
+      <div class="socialaccount_ballot">
+        <ul class="socialaccount_providers">
+          {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        </ul>
+        <div class="login-or">{% translate "or" %}</div>
+      </div>
+      {% include "socialaccount/snippets/login_extra.html" %}
+    {% else %}
+      {% if ACCOUNT_ALLOW_REGISTRATION %}
+        <p>
+          {% blocktranslate trimmed %}
+            If you have not created an account yet, then please
+            <a href="{{ signup_url }}" class="account-link">register</a> first.
+          {% endblocktranslate %}
+        </p>
+      {% endif %}
+    {% endif %}
+    <form class="account-form" method="post" action="{% url 'account_login' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      {% if redirect_field_value %}
+        <input type="hidden"
+               name="{{ redirect_field_name }}"
+               value="{{ redirect_field_value }}"/>
+      {% endif %}
+      <button class="primaryAction btn btn-primary" type="submit">
+  <i class="fas fa-sign-in-alt"></i> Log in
+</button>
+    </form>
+  </div>
+{% endblock inner %}
+
+{% block footer %}
+{% endblock footer %}

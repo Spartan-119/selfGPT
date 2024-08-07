@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+  User: {{ object.name }} | selfGPT
+{% endblock title %}
+
+{% block custom_javascript %}
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var stripe = Stripe('{{ stripe_public_key }}');
+      var refillButton = document.getElementById('refill-account');
+      var amountInput = document.getElementById('refill-amount');
+
+      refillButton.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent form from submitting immediately
+        var amount = parseFloat(amountInput.value); // Get the amount from input as a float
+
+        // Check if the amount is less than 20
+        if (amount < 20) {
+          alert('The minimum refill amount is $20. Please enter a valid amount.');
+          return; // Stop the function here
+        }
+
+        if (amount <= 0) {
+          alert('Please enter a valid amount.');
+          return;
+        }
+
+        // Create a new Checkout Session using the backend endpoint you set up
+        fetch('/payments/create-checkout-session/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Include CSRF token as needed
+            'X-CSRFToken': getCookie('csrftoken'), // Function to get CSRF token from cookies
+          },
+          body: JSON.stringify({
+            amount: amount
+          })
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (session) {
+            // Redirect to Stripe Checkout
+            return stripe.redirectToCheckout({sessionId: session.id});
+          })
+          .then(function (result) {
+            if (result.error) {
+              // If redirectToCheckout fails due to a browser or network
+              // error, display the localized error message to your customer
+              // using result.error.message.
+              alert(result.error.message);
+            }
+          })
+          .catch(function (error) {
+            console.error('Error:', error);
+          });
+      });
+    });
+
+    // Function to get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <!-- User Details Section -->
+      <div class="col-md-6">
+        <div class="card mt-3">
+          <div class="card-body">
+            <h3>{{ object.name }}</h3>
+            <p><strong>Email:</strong> {{ object.email }}</p>
+            {% if object.website %}
+              <p><strong>Website:</strong> <a href="{{ object.website }}">{{ object.website }}</a></p>
+            {% endif %}
+            {% if object.phone %}
+              <p><strong>Phone: </strong> {{ object.phone }}</p>
+            {% endif %}
+            <p><strong>Registered at:</strong> {{ object.registered_at|date:"F d, Y" }}</p>
+            {% if object == request.user %}
+              <!-- Action button -->
+              <a class="button confirm-button" href="{% url 'users:update' %}" role="button">Edit profile</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Conditional Refill Account Section for logged-in user -->
+      {% if object == request.user %}
+        <div class="col-md-6">
+          <div class="card mt-3">
+            <div class="card-body">
+              <h3>Refill your account</h3>
+              <p><strong>Balance:</strong> ${{ object.check_balance|floatformat:2 }}</p>
+              <div class="form-row align-items-center">
+                <div class="col">
+                  <label for="refill-amount" class="sr-only">{% translate "Amount ($):" %}</label>
+                  <input type="number" class="form-control mb-2" id="refill-amount" name="amount" min="20" step="any"
+                         placeholder="{% translate "Amount in USD (min 20)" %}">
+                </div>
+                <div class="col-auto">
+                  <button class="button other-button mb-2" id="refill-account">Refill account</button>
+                </div>
+                <div class="col-auto">
+                  <p class="text-center"><a href="{% url 'users:refill' request.user.uuid %}"><small>Check
+                    pricing</small></a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock content %}

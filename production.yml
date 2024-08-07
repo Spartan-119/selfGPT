@@ -1,0 +1,83 @@
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_django_media: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+
+    image: selfgpt_production_django
+    volumes:
+      - production_django_media:/app/selfgpt/media
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    ports:
+      - '8043:5000'
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: selfgpt_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  redis:
+    image: docker.io/redis:6
+
+  celeryworker:
+    <<: *django
+    image: selfgpt_production_celeryworker
+    ports: []
+    volumes:
+      - production_django_media:/app/selfgpt/media
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: selfgpt_production_celerybeat
+    ports: []
+    volumes:
+      - production_django_media:/app/selfgpt/media
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: selfgpt_production_flower
+    ports: []
+    command: /start-flower
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: selfgpt_local_nginx
+    ports:
+      - '8044:80'
+    depends_on:
+      - django
+    volumes:
+      - production_django_media:/usr/share/nginx/media:ro
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: '${PGADMIN_DEFAULT_EMAIL}'
+      PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_DEFAULT_PASSWORD}'
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+    ports:
+      - '8045:80'

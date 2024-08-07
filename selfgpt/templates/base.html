@@ -1,0 +1,262 @@
+{% load static i18n compress user_tags %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+  <title>
+    {% block title %}
+      selfGPT: AI chat, using with your own data
+    {% endblock title %}
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description"
+        content="AI assistant on your own data"/>
+  <meta name="author"
+        content="Simeon Emanuilov"/>
+  <link rel="icon" href="{% static 'images/favicons/favicon.png' %}"/>
+  {% block css %}
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+          integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Your stuff: Third-party CSS libraries go here -->
+
+    {% compress css %}
+      <link href="{% static 'css/project.css' %}" rel="stylesheet"/>
+    {% endcompress %}
+
+
+  {% endblock css %}
+  <!-- Le javascript
+      ================================================== -->
+  {# Placed at the top of the document so pages load faster with defer #}
+  {% block javascript %}
+
+
+    <!-- Bootstrap JS -->
+    <script defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
+            integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+    <!-- Your stuff: Third-party javascript libraries go here -->
+
+
+    <!-- place project specific Javascript in this file -->
+
+
+    {% compress js %}
+      <script defer src="{% static 'js/project.js' %}"></script>
+    {% endcompress %}
+
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-MGBHTMBR');</script>
+    <!-- End Google Tag Manager -->
+
+  {% endblock javascript %}
+
+  {% block custom_javascript %}
+  {% endblock custom_javascript %}
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+  <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MGBHTMBR"
+          height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+{% block navbar %}
+  <div class="mb-3">
+    <nav class="navbar navbar-expand-md navbar-light">
+      <div class="container">
+        <button class="navbar-toggler navbar-toggler-right"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon text-light"></span>
+        </button>
+        <a class="navbar-brand text-light" href="{% url 'home' %}">
+          <img src="{% static 'images/logo-white-noslogan.png' %}" alt="selfGPT logo" class="logo"/>
+        </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            {% if not request.user.is_authenticated %}
+              {% if ACCOUNT_ALLOW_REGISTRATION %}
+                <li class="nav-item">
+                  {# URL provided by django-allauth/account/urls.py #}
+                  <a id="sign-up-link" class="nav-link text-light"
+                     href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
+                </li>
+              {% endif %}
+              <li class="nav-item">
+                {# URL provided by django-allauth/account/urls.py #}
+                <a id="log-in-link" class="nav-link text-light"
+                   href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+        <!-- User Profile Points Display -->
+        {% if request.user.is_authenticated %}
+          <ul class="navbar-nav">
+            <li class="nav-item text-light user-balance-info">
+              <a class="nav-link text-light" href="{% url 'users:detail' request.user.uuid %}">
+                {% get_user_balance request.user %}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light" href="{% url 'users:detail' request.user.uuid %}"
+                 title="{% translate 'My Profile' %}">
+                <i class="fas fa-user"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light" href="{% url 'account_logout' %}" title="{% translate 'Sign Out' %}">
+                <i class="fas fa-sign-out-alt"></i>
+              </a>
+            </li>
+
+          </ul>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+{% endblock navbar %}
+<div class="container main-content mt-3">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% block content %}
+    <p>Use this document as a way to quick start any new project.</p>
+  {% endblock content %}
+</div>
+
+<!-- /container -->
+{% block modal %}
+{% endblock modal %}
+
+{% block footer %}
+  <!-- Footer -->
+  <footer class="text-center text-lg-start text-muted mt-5">
+    <section class="d-flex justify-content-center p-4 border-bottom text-light">
+      <!-- Left -->
+      <div class="me-5 d-none d-lg-block">
+        <span>Connect with us:</span>
+      </div>
+      <!-- Left -->
+
+      <!-- Right -->
+      <div>
+        <a href="https://twitter.com/selfGPT" class="me-4 text-reset">
+          <img src="{% static 'images/icons/x-logo.png' %}" alt="X account" width="25">
+        </a>
+      </div>
+      <!-- Right -->
+    </section>
+
+    <!-- Section: Links  -->
+    <section class="text-light">
+      <div class="container text-center text-md-start mt-5">
+        <div class="row mt-3">
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+            <!-- Content -->
+            <h6 class="text-uppercase fw-bold mb-4">
+              <img src="{% static 'images/logo-white.png' %}" alt="selfGPT logo" class="logo-footer"/>
+            </h6>
+            <p>
+              Transform PDFs and text files into interactive AI insights, all within a
+              user-friendly interface. No coding knowledge required.
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold mb-4">
+              Useful links
+            </h6>
+
+            <p>
+              <a href="{% url 'indexes:list' %}" class="text-reset">Indexes</a>
+            </p>
+            {% if request.user.is_authenticated %}
+              <p>
+                <a href="{% url 'users:detail' request.user.uuid %}" class="text-reset">Profile</a>
+              </p>
+              <p>
+                <a href="{% url 'users:refill' request.user.uuid %}" class="text-reset">Refill account</a>
+              </p>
+            {% endif %}
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold mb-4">
+              Contact
+            </h6>
+            <p>
+              <i class="fas fa-envelope me-3"></i>
+              support@selfgpt.io
+            </p>
+          </div>
+          <!-- Grid column -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Links  -->
+
+    <div class="text-center text-light p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+      © 2024 All rights reserved |
+      <a class="text-reset text-light fw-bold" href="https://selfgpt.io/">selfGPT.io</a>
+    </div>
+  </footer>
+  <!-- Footer -->
+{% endblock footer %}
+
+{% block inline_javascript %}
+  {% comment %}
+    Script tags with only code, no src (defer by default). To run
+    with a "defer" so that you run inline code:
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        /* Run whatever you want */
+      });
+    </script>
+    {% endcomment %}
+{% endblock inline_javascript %}
+</body>
+</html>

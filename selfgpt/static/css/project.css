@@ -1,0 +1,457 @@
+/* General styles */
+.alert-debug {
+  color: black;
+  background-color: white;
+  border-color: #d6e9c6;
+}
+
+.alert-error {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #eed3d7;
+}
+
+body {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.22em;
+}
+
+/* Consolidate logo styles to avoid redundancy */
+.logo {
+  height: 50px; /* Adjusted logo size to fit tighter navbar. Removed max-width as height adjustment is sufficient for logo size control */
+  border-radius: 20px;
+  width: auto; /* Ensures logo maintains aspect ratio */
+}
+
+h2,
+h4 {
+  color: #333;
+}
+
+/* Button and form styles */
+.form-label,
+.btn-primary {
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Chat interface styles */
+.chat-history {
+  border: 1px solid #ddd;
+  padding: 10px;
+  height: 250px;
+  overflow-y: auto;
+  background-color: #fff;
+  margin-top: 20px;
+}
+
+.user-question,
+.chat-response {
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.user-question {
+  background-color: #e7f3fe;
+  border-left: 3px solid #007bff;
+}
+
+.chat-response {
+  background-color: #f1f1f1;
+  border-left: 3px solid #dc3545;
+}
+
+/* Navbar optimization */
+.navbar {
+  padding: 0.5rem 1rem; /* Optimize padding to make content tighter */
+}
+
+/* Content container width */
+.container {
+  max-width: 1100px; /* Custom width for tighter content layout */
+}
+
+/* Main content background image */
+.main-content {
+  min-height: 200px;
+}
+
+/* Custom CSS for navbar icons */
+.navbar .navbar-nav .nav-item .nav-link {
+  padding: 0 15px;
+}
+
+/* Icon sizing */
+.navbar .navbar-nav .nav-item .nav-link i {
+  font-size: 1.2rem;
+}
+
+footer,
+nav {
+  background: #1c244b;
+}
+
+.logo-footer {
+  height: 70px; /* Adjusted logo size to fit tighter navbar. Removed max-width as height adjustment is sufficient for logo size control */
+  border-radius: 20px;
+  width: auto; /* Ensures logo maintains aspect ratio */
+}
+
+:root {
+  --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --msger-bg: #fff;
+  --border: 2px solid #ddd;
+  --left-msg-bg: #ececec;
+  --right-msg-bg: #1c244b;
+}
+
+.msger {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 300px;
+  margin: 25px 10px;
+  height: calc(100% - 50px);
+
+  border-radius: 5px;
+  background: var(--msger-bg);
+  box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+}
+
+.msger-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: var(--border);
+  background: #eee;
+  color: #666;
+}
+
+.msger-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #fcfcfe;
+  max-height: 450px;
+  max-width: 100%;
+}
+
+.msger-chat::-webkit-scrollbar {
+  width: 6px;
+}
+
+.msger-chat::-webkit-scrollbar-track {
+  background: #ddd;
+}
+
+.msger-chat::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+}
+
+.msg {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.msg:last-of-type {
+  margin: 0;
+}
+
+.msg-img {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  background: #ddd;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: 50%;
+}
+
+.msg-bubble {
+  max-width: 80%;
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--left-msg-bg);
+}
+
+.msg-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.msg-info-name {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.msg-info-time {
+  font-size: 0.85em;
+}
+
+.left-msg .msg-bubble {
+  border-bottom-left-radius: 0;
+}
+
+.right-msg {
+  flex-direction: row-reverse;
+}
+
+.right-msg .msg-bubble {
+  background: var(--right-msg-bg);
+  color: #fff;
+  border-bottom-right-radius: 0;
+}
+
+.right-msg .msg-img {
+  margin: 0 0 0 10px;
+}
+
+.msger-inputarea {
+  display: flex;
+  padding: 10px;
+}
+
+.msger-inputarea * {
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  font-size: 1em;
+}
+
+.msger-input {
+  flex: 1;
+  background: #1c244b1f;
+}
+
+.msger-send-btn {
+  margin-left: 10px;
+  background: #1c244b;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.23s;
+}
+
+.msger-send-btn:hover {
+  background: #010826;
+}
+
+.msger-chat {
+  background-color: #fcfcfe;
+  border-radius: 30px;
+}
+
+.control-panel {
+  min-width: 170px;
+  text-align: center;
+  padding: 0;
+  font-size: 15px;
+  border: 1px dashed #1c244b;
+  margin-left: 10px;
+}
+
+.control-panel > .form-check-input,
+.control-panel > .form-check-label {
+  padding: 0;
+}
+
+.loader {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: #007bff;
+  font-size: 24px;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .msger,
+  .msger-inputarea {
+    display: block;
+  }
+}
+
+.callout {
+  padding: 20px;
+  background-color: #f9f9f9; /* Light grey background */
+  border-left: 5px solid #007bff; /* Blue left border */
+  margin: 20px 0;
+  border-radius: 5px;
+}
+
+.callout h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #1c244b; /* Blue color for the heading */
+}
+
+.callout p {
+  margin: 0;
+}
+
+/* General Button Styling */
+.button {
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background 0.3s ease-in-out,
+    transform 0.2s ease,
+    color 0.2s ease;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none; /* For link (<a>) elements styled as buttons */
+}
+
+.button:hover,
+.button:focus {
+  transform: translateY(-2px);
+  text-decoration: none; /* Prevent underlining on hover/focus for <a> */
+  outline: none;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+/* Confirmation Button */
+.confirm-button {
+  background: linear-gradient(45deg, #1c244b, #2a5f9e);
+}
+
+.confirm-button:hover,
+.confirm-button:focus {
+  background: linear-gradient(45deg, #2a5f9e, #1c244b);
+  color: white;
+}
+
+/* Deletion Button */
+.delete-button {
+  background: linear-gradient(45deg, #b72a2a, #e05858);
+}
+
+.delete-button:hover,
+.delete-button:focus {
+  background: linear-gradient(45deg, #e05858, #b72a2a);
+  color: white;
+}
+
+/* Other Operations Button */
+.other-button {
+  background: linear-gradient(45deg, #6a1b9a, #9c27b0);
+}
+
+.other-button:hover,
+.other-button:focus {
+  background: linear-gradient(45deg, #9c27b0, #6a1b9a);
+  color: white;
+}
+
+.account-container {
+  max-width: 700px;
+  margin: 0 auto;
+  background: linear-gradient(45deg, #1c244b, #2a5f9e);
+  color: #fff;
+  padding: 20px;
+  border-radius: 40px;
+  border: 1px dashed;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.account-form li {
+  color: white;
+}
+
+.account-form a {
+  color: white;
+}
+
+.account-form a:hover {
+  color: white;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-account {
+  max-width: 250px; /* Adjust based on your logo's size */
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-form input,
+.account-form button {
+  padding: 10px;
+  margin-bottom: 10px; /* Space between form elements */
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.account-form button {
+  background: linear-gradient(45deg, #dee1ed, #87bdfd);
+  color: black;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  min-height: 3.5em;
+  font-size: large;
+  border-radius: 20px;
+}
+
+.account-form button:hover {
+  background: linear-gradient(45deg, #dee1ed, #6c94f8);
+  color: black;
+}
+
+.account-link {
+  color: white;
+  text-decoration: underline;
+}
+
+.account-link:hover {
+  color: white;
+}
+
+.account-container h1 {
+  text-align: center;
+}
+
+input#refill-amount {
+  width: 50%;
+}
+
+.float-right {
+  float: right;
+}

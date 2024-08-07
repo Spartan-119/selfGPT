@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Top up balancer | selfGPT{% endblock %}
+
+{% block custom_javascript %}
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var stripe = Stripe('{{ stripe_public_key }}');
+      var refillButton = document.getElementById('refill-account');
+      var amountInput = document.getElementById('refill-amount');
+
+      refillButton.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent form from submitting immediately
+        var amount = parseFloat(amountInput.value); // Get the amount from input as a float
+
+        // Check if the amount is less than 20
+        if (amount < 20) {
+          alert('The minimum refill amount is $20. Please enter a valid amount.');
+          return; // Stop the function here
+        }
+
+        if (amount <= 0) {
+          alert('Please enter a valid amount.');
+          return;
+        }
+
+        // Create a new Checkout Session using the backend endpoint you set up
+        fetch('/payments/create-checkout-session/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Include CSRF token as needed
+            'X-CSRFToken': getCookie('csrftoken'), // Function to get CSRF token from cookies
+          },
+          body: JSON.stringify({
+            amount: amount
+          })
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (session) {
+            // Redirect to Stripe Checkout
+            return stripe.redirectToCheckout({sessionId: session.id});
+          })
+          .then(function (result) {
+            if (result.error) {
+              // If redirectToCheckout fails due to a browser or network
+              // error, display the localized error message to your customer
+              // using result.error.message.
+              alert(result.error.message);
+            }
+          })
+          .catch(function (error) {
+            console.error('Error:', error);
+          });
+      });
+    });
+
+    // Function to get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="row mt-4">
+    <div class="col-12">
+      <h2>Refill your account</h2>
+      <p><strong>Balance:</strong> ${{ object.check_balance|floatformat:2 }}</p>
+    </div>
+    <div class="col-12">
+      <div class="form-row align-items-center">
+        <div class="col">
+          <label for="refill-amount" class="sr-only">Amount ($):</label>
+          <input type="number" class="form-control mb-2" id="refill-amount" name="amount" min="20" step="any"
+                 placeholder="Amount in USD (min 20)">
+        </div>
+        <div class="col-auto">
+          <button class="button other-button mb-2" id="refill-account">Refill account</button>
+        </div>
+      </div>
+    </div>
+    <!-- Pricing Table -->
+    <div class="col-12 mt-4">
+      <h3>Pricing Details</h3>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Service</th>
+          <th scope="col">Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>Prompt token</td>
+          <td>$0.000001</td>
+        </tr>
+        <tr>
+          <td>Completion token</td>
+          <td>$0.000003</td>
+        </tr>
+        <tr>
+          <td>Embedding operation</td>
+          <td>$0.00000026</td>
+        </tr>
+        <tr>
+          <td>Image annotation operation</td>
+          <td>$0.015</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Billing Process -->
+    <div class="col-12 mt-4">
+      <h3>Billing Process</h3>
+      <p>We operate on a micro-transaction basis, ensuring that our services are both affordable and scalable to your
+        needs. Our platform allows you to track your usage and make pre-payments, eliminating any concerns about
+        unexpected costs.</p>
+      <p>selfGPT processes your documents by splitting them into manageable chunks and generating tailored prompts. This
+        approach allows our system to deeply understand and interact with your data, offering personalized AI insights
+        from your PDFs and text files. Our micro-transaction pricing model is designed for affordability and
+        scalability, complete with detailed usage tracking and pre-payment options in the app for effective cost
+        control.</p>
+    </div>
+  </div>
+{% endblock %}

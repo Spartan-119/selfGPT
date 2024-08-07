@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Transcribe Video | selfGPT
+{% endblock title %}
+
+{% block content %}
+  {% include "_running_tasks.html" %}
+
+  <div aria-label="breadcrumb p-1">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'indexes:list' %}" class="link-dark">All indexes</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'indexes:detail' uuid=index.uuid %}"
+                                     class="link-dark">Index {{ index.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Transcribe Video</li>
+    </ol>
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for error in form.non_field_errors %}
+        {{ error }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="mt-3">
+    <h2>Transcribe YouTube video for index "{{ index.name }}"</h2>
+    <form method="post" class="mt-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Transcribe Video</button>
+      <a href="{% url 'indexes:detail' uuid=index.uuid %}" class="btn btn-secondary ml-2">Back to Index</a>
+    </form>
+  </div>
+{% endblock content %}

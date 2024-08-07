@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Index detail: {{ object.name }} | selfGPT
+{% endblock title %}
+
+{% block custom_javascript %}
+  <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/>
+  <script>
+    // Prevent Dropzone from auto discovering this element:
+    Dropzone.autoDiscover = false;
+    // This is your configuration for Dropzone:
+    document.addEventListener("DOMContentLoaded", function () {
+      // Create the Dropzone instance
+      var myDropzone = new Dropzone("div#my-awesome-dropzone", {
+        url: "{% url 'indexes:file-upload' uuid=index.uuid %}", // Ensure this matches your URL configuration
+        autoProcessQueue: false, // Prevent automatic upload
+        paramName: "file", // The name that will be used to transfer the file
+        maxFilesize: 2, // MB
+        acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.doc,.docx,.txt",
+        // Custom message
+        dictDefaultMessage: "Drop files here or click to upload",
+      });
+
+      // Add event listener to your upload button
+      document.querySelector("#uploadButton").addEventListener("click", function () {
+        myDropzone.processQueue(); // Tell Dropzone to process all queued files
+      });
+
+      // Optional: Listen to the "addedfile" event and enable the upload button
+      myDropzone.on("addedfile", function () {
+        document.querySelector("#uploadButton").disabled = false; // Enable the button
+      });
+    });
+  </script>
+{% endblock custom_javascript %}
+
+{% block content %}
+  {% include "_running_tasks.html" %}
+
+  <div aria-label="breadcrumb p-1">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'indexes:list' %}" class="link-dark">All indexes</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'indexes:detail' index.uuid %}" class="link-dark">Index {{ index.name }} </a></li>
+      <li class="breadcrumb-item active" aria-current="page">New files</li>
+    </ol>
+  </div>
+
+  <div class="mt-3">
+    <h2>Add new file to index <a href="{% url 'indexes:detail' index.uuid %}" class="link-dark">{{ index.name }}</a></h2>
+    <div id="my-awesome-dropzone" class="dropzone"></div>
+    <button id="uploadButton" class="button confirm-button mt-2" disabled>Upload Files</button>
+    <a href="{% url 'indexes:detail' uuid=index.uuid %}" class="button delete-button mt-3">Back to Index</a>
+  </div>
+{% endblock content %}

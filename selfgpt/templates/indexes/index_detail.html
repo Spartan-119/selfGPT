@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Index detail: {{ object.name }} | selfGPT
+{% endblock title %}
+
+{% block content %}
+  {% include "_running_tasks.html" %}
+
+  <div aria-label="breadcrumb p-1">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'indexes:list' %}" class="link-dark">All indexes</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Index {{ index.name }}</li>
+    </ol>
+  </div>
+
+
+  <div class="row">
+  <div class="col-md-6">
+    <div class="card mt-3">
+      <div class="card-body">
+        <h3>Index Details</h3>
+        <p class="card-text"><strong>Name: </strong>{{ index.name }}</p>
+        <p class="card-text"><strong>Created at: </strong>{{ index.created|date:"Y-m-d H:i" }}</p>
+        <p class="card-text"><strong>UUID: </strong> {{ index.uuid }}</p>
+        <p class="card-text"><strong>Prompt tokens used: </strong>{{ index.prompt_tokens }}</p>
+        <p class="card-text"><strong>Completion tokens used: </strong>{{ index.completion_tokens }}</p>
+        <p class="card-text"><strong>Image annotations:</strong> {{ index.image_annotations }}</p>
+        <p class="card-text"><strong>Embedding operations: </strong>{{ index.embedding_operations }}</p>
+        <a href="{% url 'indexes:update' uuid=index.uuid %}" class="button confirm-button">Edit</a>
+        <a href="{% url 'indexes:delete' uuid=index.uuid %}" class="button delete-button">Delete</a>
+        <a href="{% url 'indexes:chat' uuid=index.uuid %}" class="button other-button mb-3 float-right">Start chat</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card mt-3">
+      <div class="card-body">
+        <h3>Files</h3>
+        <p class="card-text"><strong>Total files: </strong>{{ index.files.count }}</p>
+        <a href="{% url 'indexes:transcribe-video' uuid=index.uuid %}" class="btn btn-outline-primary mb-3"><i class="fas fa-microphone"></i> Transcribe Video</a>
+        <a href="{% url 'indexes:file-upload' uuid=index.uuid %}" class="btn btn-outline-success mb-3"><i class="fas fa-upload"></i> Upload new file</a>
+        <div class="list-group">
+          {% for file in index.files.all %}
+            <a href="{{ file.file.url }}" class="list-group-item list-group-item-action" target="_blank">
+              {{ file.original_filename }}
+              <span class="text-muted">uploaded at {{ file.created|date:"Y-m-d H:i" }}</span>
+            </a>
+          {% empty %}
+            <p>No files uploaded for this index.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}

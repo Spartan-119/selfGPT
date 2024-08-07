@@ -1,0 +1,45 @@
+{% extends "account/base.html" %}
+
+{% load static i18n %}
+{% load crispy_forms_tags %}
+
+{% block navbar %}
+{% endblock navbar %}
+
+{% block title %}
+  Register | selfGPT
+{% endblock title %}
+
+{% block head_title %}
+  {% translate "Signup" %}
+{% endblock head_title %}
+{% block inner %}
+  <div class="account-container">
+    <!-- Logo at the top of the form -->
+    <div class="logo-container">
+      <img src="{% static 'images/logo-white.png' %}" alt="selfGPT Logo" class="logo-account">
+    </div>
+    <h1>Register</h1>
+    <p>
+      {% blocktranslate %}Already have an account? Then please <a href="{{ login_url }}" class="account-link">sign in</a>.{% endblocktranslate %}
+    </p>
+    <form class="account-form"
+          id="signup_form"
+          method="post"
+          action="{% url 'account_signup' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      {% if redirect_field_value %}
+        <input type="hidden"
+               name="{{ redirect_field_name }}"
+               value="{{ redirect_field_value }}"/>
+      {% endif %}
+      <button class="btn btn-primary" type="submit">
+  <i class="fas fa-user-plus"></i> Register now
+</button>
+    </form>
+  </div>
+{% endblock inner %}
+
+{% block footer %}
+{% endblock footer %}

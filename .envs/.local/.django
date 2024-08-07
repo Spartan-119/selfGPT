@@ -1,0 +1,26 @@
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+IPYTHONDIR=/app/.ipython
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=xxxchangethisxxxx
+CELERY_FLOWER_PASSWORD=xxxchangethisxxxx
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+OPENAI_API_KEY=sk-xxxchangethisxxxx
+STRIPE_PUBLIC_KEY=xxxchangethisxxxx
+STRIPE_SECRET_KEY=xxxchangethisxxxx
+STRIPE_WEBHOOK_SECRET=xxxchangethisxxxx
+TOKENIZERS_PARALLELISM=False
+
+PGADMIN_DEFAULT_EMAIL=xxxchangethisxxxx
+PGADMIN_DEFAULT_PASSWORD=xxxchangethisxxxx
+
+HF_HOME=/app/models
+NLTK_DATA=/app/models

@@ -1,0 +1,8 @@
+{% if running_tasks %}
+  <div class="alert alert-info" role="alert">
+    <strong>Running background tasks:</strong> {{ running_tasks|length }} -
+    {% for task in running_tasks %}
+      {{ task.task_name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}

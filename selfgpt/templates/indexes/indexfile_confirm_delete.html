@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Index detail: {{ object.name }} | selfGPT
+{% endblock title %}
+
+{% block content %}
+  <h2>Confirm File Deletion</h2>
+  <p>Are you sure you want to delete the file "{{ object.original_filename }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete File</button>
+    <a href="{% url 'indexes:detail' index_uuid=object.index.uuid %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock content %}

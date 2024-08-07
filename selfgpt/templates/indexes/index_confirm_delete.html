@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Confirm delete: {{ object.name }} | selfGPT
+{% endblock title %}
+
+{% block content %}
+  <h2 class="mt-4">Confirm Delete</h2>
+  <p>Are you sure you want to delete the index "{{ index.name }}"?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Confirm" class="button confirm-button">
+    <a href="{% url 'indexes:list' %}" class="button delete-button">Cancel</a>
+  </form>
+{% endblock content %}
