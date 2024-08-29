@@ -31,7 +31,7 @@ pgvector==0.3.2  # https://github.com/pgvector/pgvector-python
 nltk==3.8.1  # https://www.nltk.org/
 transformers==4.43.2  # https://huggingface.co/docs/transformers/en/installation
 torch==2.3.1  # https://pytorch.org/docs/stable/torch.html
-openai==1.37.1  # https://platform.openai.com/docs/api-reference
+openai==1.43.0  # https://platform.openai.com/docs/api-reference
 pymupdf==1.24.9  # https://pymupdf.readthedocs.io/en/latest/
 python-magic==0.4.27  # https://github.com/ahupp/python-magic
 yt-dlp==2024.8.1  # https://github.com/yt-dlp/yt-dlp
